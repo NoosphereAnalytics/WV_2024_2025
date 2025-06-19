@@ -1,3 +1,6 @@
+This dataset is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+You are free to use this data for academic, research, or journalistic purposes, with attribution. Commercial use is not permitted.
+
 ````markdown
 # West Virginia K-12 Board-Meeting Document Corpus
 
