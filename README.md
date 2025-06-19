@@ -1,12 +1,14 @@
-West Virginia K-12 Board-Meeting Document Corpus
+````markdown
+# West Virginia K-12 Board-Meeting Document Corpus
 
-Academic / public-interest release · School Year 2024-2025
+**Academic / public-interest release · School Year 2024-2025**
 
-    Please cite this corpus if you use it (see Citation below).
-    If you need more than raw data, Noosphere Analytics offers AI-assisted
-    tools for building targeted datasets and uncovering insights.
-    Demo links and contact info are at the end of this file.
+- Please cite this corpus if you use it (see Citation below).
+- If you need more than raw data, Noosphere Analytics offers AI-assisted  
+  tools for building targeted datasets and uncovering insights.  
+  Demo links and contact info are at the end of this file.
 
+```bibtex
 @dataset{m_foster_2025_wv_board_corpus,
   author = {Morgan Foster},
   title  = {West Virginia K-12 School-Board Meeting Document Corpus (SY 2024-2025)},
@@ -14,8 +16,11 @@ Academic / public-interest release · School Year 2024-2025
   url    = {https://github.com/noosphereanalytics/WV_2024_2025},
   note   = {Version 1.0.  Please cite if used.}
 }
+````
 
-1 · Overview
+---
+
+## 1 · Overview
 
 This archive contains the most complete public collection (to date) of
 board-meeting material published by all 55 regular school districts in
@@ -23,15 +28,11 @@ West Virginia during the 2024-2025 school year.
 
 Documents were gathered by an automated pipeline that
 
-    crawls district websites,
-
-    scrapes agendas, minutes, contracts, transcripts, etc.,
-
-    classifies each file (date + type),
-
-    applies sanity-checks,
-
-    stores structured metadata in two SQLite databases.
+* crawls district websites,
+* scrapes agendas, minutes, contracts, transcripts, etc.,
+* classifies each file (date + type),
+* applies sanity-checks,
+* stores structured metadata in two SQLite databases.
 
 Raw artefacts (PDFs, TXT conversions, etc.) are available via a separate
 download link (see Raw Archives).
@@ -43,14 +44,18 @@ download link (see Raw Archives).
 | Files represented in DB | **8 100** |
 | Download-metadata rows  |     9 094 |
 
-2 · Folder layout
+---
 
- /.
- ├─ wv_2024_2025.db                     ← main dataset
- ├─ wv_2024_2025_download_metadata.db   ← download metadata
- ├─ queries                             ← copy-paste examples
+## 2 · Folder layout
 
-2.1 Database schema (abridged)
+```
+/.
+├─ wv_2024_2025.db                     ← main dataset
+├─ wv_2024_2025_download_metadata.db   ← download metadata
+├─ queries                             ← copy-paste examples
+```
+
+### 2.1 Database schema (abridged)
 
 | Table                  | Key columns / constraints                                                                                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -58,13 +63,15 @@ download link (see Raw Archives).
 | **meeting\_documents** | `meeting_document_id (PK)`, `entity_id` (FK), `date`, `doctype` (ENUM), `filename`, `raw_md5sum` **unique**, `text_md5sum` **unique** |
 | **download\_metadata** | `download_metadata_id (PK)`, `meeting_document_id` (FK, nullable), `download_url`, `saved_as`, `md5`, `downloaded_utc`                |
 
+---
 
-3 · Example query
+## 3 · Example query
 
 Find every document that mentions “executive order” or “tariff”
 (case-insensitive) and list the district, date and filename:
 
-`SELECT e.name,
+```sql
+SELECT e.name,
        md.date,
        md.filename,
        md.source_url
@@ -73,22 +80,24 @@ JOIN   entities e USING (entity_id)
 WHERE  LOWER(md.text) LIKE '%executive order%'
    OR  LOWER(md.text) LIKE '%tariff%'
 ORDER  BY md.date;
-`
+```
 
-| Entity                        | Date       | File (internal ID)                                           | Source URL                                                                                                                                                                                                                      | Text snippet (±25 chars around the hit)                                                                                                                            |
-| ----------------------------- | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **marion\_county\_schools**   | 2022-06-21 | `2022-06-21-ec00380a1d4c846da0fc45264700f942-minutes.txt`    | [https://core-docs.s3.amazonaws.com/documents/asset/uploaded\_file/1972/MCS/2220774/01-070522\_Attachment.pdf](https://core-docs.s3.amazonaws.com/documents/asset/uploaded_file/1972/MCS/2220774/01-070522_Attachment.pdf)      | “…pricing may be affected by market conditions including, but not limited to, **tariffs**, quotas, and/or duties… ”                                                |
-| **randolph\_county\_schools** | 2022-09-09 | `2022-09-09-690ef3ab32ddd98c023f464a5ad3ab43-contract.txt`   | [https://go.boarddocs.com/wv/rand/Board.nsf/files/DE9R3S6B3F5B/\$file/School%20Specialty%20AEPA%20Contract.pdf](https://go.boarddocs.com/wv/rand/Board.nsf/files/DE9R3S6B3F5B/$file/School%20Specialty%20AEPA%20Contract.pdf)   | “…shall abide by the requirements of **Executive Order** 11246, ‘Equal Employment Opportunity’…”                                                                   |
-| **mason\_county\_schools**    | 2023-04-01 | `2023-04-01-99ce7e2e7553bfb8a5c88b0c23b96bf9-other.txt`      | [https://go.boarddocs.com/wv/mcsd/Board.nsf/files/DGMHM5491BF3/\$file/6325.pdf](https://go.boarddocs.com/wv/mcsd/Board.nsf/files/DGMHM5491BF3/$file/6325.pdf)                                                                   | “…subject to and shall abide by the non-procurement debarment and suspension regs implementing **Executive Orders** 12549 and 12689…”                              |
-| **marion\_county\_schools**   | 2023-05-01 | `2023-05-01-516449ff5e11b9c38aba484be494d08d-minutes.txt`    | [https://core-docs.s3.amazonaws.com/documents/asset/uploaded\_file/1972/MCS/3023089/43-051523\_ATTACHMENT\_A.pdf](https://core-docs.s3.amazonaws.com/documents/asset/uploaded_file/1972/MCS/3023089/43-051523_ATTACHMENT_A.pdf) | “…The parties hereto shall abide by the requirements of **Executive Order** 11246, 42 U.S.C. §2000d…”                                                              |
-| **kanawha\_county\_schools**  | 2024-01-18 | `2024-01-18-823eaf122756698479c11782a7ad1b88-minutes.txt`    | *(minutes—no public URL)*                                                                                                                                                                                                       | “…and bathrooms. First SCOTUS ruled that in Title VII sex included gender identity. Next Biden’s **Executive Order** transferred the SCOTUS decision to Title IX…” |
-| **boone\_county\_schools**    | 2024-03-04 | `2024-03-04-e7eedd72340cbb7c41b7806473c689bc-contract.txt`   | [https://go.boarddocs.com/wv/booneboe/Board.nsf/files/D3AQYM67F25A/\$file/SCHOOL%20DATEBOOKS.pdf](https://go.boarddocs.com/wv/booneboe/Board.nsf/files/D3AQYM67F25A/$file/SCHOOL%20DATEBOOKS.pdf)                               | “…If an item on this contract is impacted by **tariffs**, SOT may impose a surcharge in the amount of the tariff…”                                                 |
-| **gilmer\_county\_schools**   | 2024-05-07 | `2024-05-07-1d732866b6da5b12e0a3a758cd9f1150-other.txt`      | [https://go.boarddocs.com/wv/gilmer/Board.nsf/files/D52PMG61E265/\$file/Bills%20for%20payment%205%2013%2024.pdf](https://go.boarddocs.com/wv/gilmer/Board.nsf/files/D52PMG61E265/$file/Bills%20for%20payment%205%2013%2024.pdf) | “…HOPE GAS tariff for May… TAR IFF for April… TAR IFF for June…”                                                                                                   |
-| **kanawha\_county\_schools**  | 2024-11-21 | `2024-11-21-88845ae9f8134f6313b2fe993d5a4f0b-transcript.txt` | *(live-stream transcript)*                                                                                                                                                                                                      | “…why Title VII sex included gender identity. Next Biden’s **executive order**… ”                                                                                  |
-| **berkeley\_county\_schools** | 2025-04-03 | `2025-04-03-04e1288182dee21c6360cd1a1088a388-transcript.txt` | [https://youtube.com/live/hScZtpD3E\_w](https://youtube.com/live/hScZtpD3E_w)                                                                                                                                                   | “…we have new **tariffs**. So we do need to be conscientious that with that project…”                                                                              |
-| **boone\_county\_schools**    | 2025-05-14 | `2025-05-14-1f791cdfe09c940f9e08e2c784469672-proposal.txt`   | [https://go.boarddocs.com/wv/booneboe/Board.nsf/files/DH3Q7Z6784DD/\$file/HVAC%20UNIT.MADISON%20ELEMENTARY.pdf](https://go.boarddocs.com/wv/booneboe/Board.nsf/files/DH3Q7Z6784DD/$file/HVAC%20UNIT.MADISON%20ELEMENTARY.pdf)   | “…Any additional taxes, duties, **tariffs** or similar items imposed prior to shipment will be charged…”                                                           |
+| Entity                        | Date       | File (internal ID)                                           | Source URL                                                                                                            | Text snippet (±25 chars around the hit)                                                                                                                            |
+| ----------------------------- | ---------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **marion\_county\_schools**   | 2022-06-21 | `2022-06-21-ec00380a1d4c846da0fc45264700f942-minutes.txt`    | [link](https://core-docs.s3.amazonaws.com/documents/asset/uploaded_file/1972/MCS/2220774/01-070522_Attachment.pdf)    | “…pricing may be affected by market conditions including, but not limited to, **tariffs**, quotas, and/or duties…”                                                 |
+| **randolph\_county\_schools** | 2022-09-09 | `2022-09-09-690ef3ab32ddd98c023f464a5ad3ab43-contract.txt`   | [link](https://go.boarddocs.com/wv/rand/Board.nsf/files/DE9R3S6B3F5B/$file/School%20Specialty%20AEPA%20Contract.pdf)  | “…shall abide by the requirements of **Executive Order** 11246, ‘Equal Employment Opportunity’…”                                                                   |
+| **mason\_county\_schools**    | 2023-04-01 | `2023-04-01-99ce7e2e7553bfb8a5c88b0c23b96bf9-other.txt`      | [link](https://go.boarddocs.com/wv/mcsd/Board.nsf/files/DGMHM5491BF3/$file/6325.pdf)                                  | “…subject to and shall abide by the non-procurement debarment and suspension regs implementing **Executive Orders** 12549 and 12689…”                              |
+| **marion\_county\_schools**   | 2023-05-01 | `2023-05-01-516449ff5e11b9c38aba484be494d08d-minutes.txt`    | [link](https://core-docs.s3.amazonaws.com/documents/asset/uploaded_file/1972/MCS/3023089/43-051523_ATTACHMENT_A.pdf)  | “…The parties hereto shall abide by the requirements of **Executive Order** 11246, 42 U.S.C. §2000d…”                                                              |
+| **kanawha\_county\_schools**  | 2024-01-18 | `2024-01-18-823eaf122756698479c11782a7ad1b88-minutes.txt`    | *(Please refer to download metadata)*                                                                                             | “…and bathrooms. First SCOTUS ruled that in Title VII sex included gender identity. Next Biden’s **Executive Order** transferred the SCOTUS decision to Title IX…” |
+| **boone\_county\_schools**    | 2024-03-04 | `2024-03-04-e7eedd72340cbb7c41b7806473c689bc-contract.txt`   | [link](https://go.boarddocs.com/wv/booneboe/Board.nsf/files/D3AQYM67F25A/$file/SCHOOL%20DATEBOOKS.pdf)                | “…If an item on this contract is impacted by **tariffs**, SOT may impose a surcharge in the amount of the tariff…”                                                 |
+| **gilmer\_county\_schools**   | 2024-05-07 | `2024-05-07-1d732866b6da5b12e0a3a758cd9f1150-other.txt`      | [link](https://go.boarddocs.com/wv/gilmer/Board.nsf/files/D52PMG61E265/$file/Bills%20for%20payment%205%2013%2024.pdf) | “…HOPE GAS tariff for May… TAR IFF for April… TAR IFF for June…”                                                                                                   |
+| **kanawha\_county\_schools**  | 2024-11-21 | `2024-11-21-88845ae9f8134f6313b2fe993d5a4f0b-transcript.txt` | *(Please refer to download metadata)*                                                                                            | “…why Title VII sex included gender identity. Next Biden’s **executive order**…”                                                                                   |
+| **berkeley\_county\_schools** | 2025-04-03 | `2025-04-03-04e1288182dee21c6360cd1a1088a388-transcript.txt` | [link](https://youtube.com/live/hScZtpD3E_w)                                                                          | “…we have new **tariffs**. So we do need to be conscientious that with that project…”                                                                              |
+| **boone\_county\_schools**    | 2025-05-14 | `2025-05-14-1f791cdfe09c940f9e08e2c784469672-proposal.txt`   | [link](https://go.boarddocs.com/wv/booneboe/Board.nsf/files/DH3Q7Z6784DD/$file/HVAC%20UNIT.MADISON%20ELEMENTARY.pdf)  | “…Any additional taxes, duties, **tariffs** or similar items imposed prior to shipment will be charged…”                                                           |
 
-4 · Doctype glossary
+---
+
+## 4 · Doctype glossary
 
 | Doctype    | Description                              |
 | ---------- | ---------------------------------------- |
@@ -104,57 +113,69 @@ ORDER  BY md.date;
 | TRANSCRIPT | Speech-to-text transcripts (Whisper.cpp) |
 | OTHER      | Un-categorised items                     |
 
-5 · Pipeline at a glance
+---
 
-<img src="pipeline-diagram.png"></img>
+## 5 · Pipeline at a glance
+
+<img src="pipeline-diagram.png" alt="Pipeline diagram" />
 
 Each entity (district) is processed in its own pipeline.
 Paths mirror geography:
 
-`data/countries/usa/states/wv/counties/<county>/<entity_type>/<entity_name>/<year>/`
+```plaintext
+data/countries/usa/states/wv/counties/<county>/<entity_type>/<entity_name>/<year>/
+```
 
-6 · Limitations & known issues
+---
 
-    - Inline / popup minutes – some districts embed minutes directly in a webpage; the scraper captured them but metadata was corrupted on this run.
+## 6 · Limitations & known issues
 
-    - Model accuracy – classification used gpt-4o-mini. Error-rate is ~25 % higher than gpt-4o, resulting in occasional missing or mislabeled files.
-
-    - ~1 000 files failed downstream processing (OCR timeouts, exotic layouts).
+* Inline / popup minutes – some districts embed minutes directly in a webpage; the scraper captured them but metadata was corrupted on this run.
+* Model accuracy – classification used gpt-4o-mini. Error-rate is \~25 % higher than gpt-4o, resulting in occasional missing or mislabeled files.
+* \~1 000 files failed downstream processing (OCR timeouts, exotic layouts).
 
 > Please report issues via GitHub.
 > If you fix something by editing the DB, feel free to open a PR with a .sql
 > patch describing your changes.
 
-7 · Raw archives
+---
 
-These will be added via archive.org and the link added here, if you need the raw (~16GB) corpus before then please email morgan@noosphereanalytics.com
+## 7 · Raw archives
 
-8 · Beyond the corpus — Noosphere Analytics
+These will be added via archive.org and the link added here.
+If you need the raw (\~16GB) corpus before then, please email
+[morgan@noosphereanalytics.com](mailto:morgan@noosphereanalytics.com)
+
+---
+
+## 8 · Beyond the corpus — Noosphere Analytics
 
 Noosphere Analytics is more than data collection – we provide a
 full suite of AI-assisted tools that help you:
 
-    Build targeted datasets from massive file collections
+* Build targeted datasets from massive file collections
+* Auto-categorise & tag documents for immediate charting
+* Discover relationships and hidden patterns
 
-    Auto-categorise & tag documents for immediate charting
+**Live demos**:
 
-    Discover relationships and hidden patterns
-
-Live demos:
-
-    https://noosphereanalytics.com/demos/MOU/
-
-    https://noosphereanalytics.com/demos/gender-identity/
-
-    https://noosphereanalytics.com/demos/book-discussions/
+* [https://noosphereanalytics.com/demos/MOU/](https://noosphereanalytics.com/demos/MOU/)
+* [https://noosphereanalytics.com/demos/gender-identity/](https://noosphereanalytics.com/demos/gender-identity/)
+* [https://noosphereanalytics.com/demos/book-discussions/](https://noosphereanalytics.com/demos/book-discussions/)
 
 Interested in a personalised demo?
-Email morgan@noosphereanalytics.com
+Email [morgan@noosphereanalytics.com](mailto:morgan@noosphereanalytics.com)
 
-9 · Contact & feedback
+---
 
-    GitHub Issues: https://github.com/your_org/wv-school-board-corpus/issues
+## 9 · Contact & feedback
 
-    Email: morgan@noosphereanalytics.com
+* GitHub Issues: [https://github.com/your\_org/wv-school-board-corpus/issues](https://github.com/your_org/wv-school-board-corpus/issues)
+* Email: [morgan@noosphereanalytics.com](mailto:morgan@noosphereanalytics.com)
 
-Happy researching!
+**Happy researching!**
+
+```
+
+Let me know if you’d like this exported as a `.md` file or need a PDF version as well.
+```
