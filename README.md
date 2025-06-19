@@ -101,7 +101,7 @@ ORDER  BY md.date;
 | **kanawha\_county\_schools**  | 2024-11-21 | *(Please refer to download metadata)*                                                                                 | “…why Title VII sex included gender identity. Next Biden’s **executive order**…”                                                        | `2024-11-21-88845ae9f8134f6313b2fe993d5a4f0b-transcript.txt` |
 | **berkeley\_county\_schools** | 2025-04-03 | [link](https://youtube.com/live/hScZtpD3E_w)                                                                          | “…we have new **tariffs**. So we do need to be conscientious that with that project…”                                                   | `2025-04-03-04e1288182dee21c6360cd1a1088a388-transcript.txt` |
 | **boone\_county\_schools**    | 2025-05-14 | [link](https://go.boarddocs.com/wv/booneboe/Board.nsf/files/DH3Q7Z6784DD/$file/HVAC%20UNIT.MADISON%20ELEMENTARY.pdf)  | “…Any additional taxes, duties, **tariffs** or similar items imposed prior to shipment will be charged…”                                | `2025-05-14-1f791cdfe09c940f9e08e2c784469672-proposal.txt`   |
-                                            |
+                                        
 
 ---
 
