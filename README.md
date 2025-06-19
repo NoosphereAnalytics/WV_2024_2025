@@ -62,13 +62,99 @@ Run `gunzip wv_2024_2025.db.gz wv_2024_2025_download_metadata.db.gz` in order to
 
 ```
 
-### 2.1 Database schema (abridged)
+### 2.1 Database schema & File Format Guide
 
-| Table                  | Key columns / constraints                                                                                                             |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **entities**           | `entity_id (PK)`, name, county, state, url                                                                                            |
-| **meeting\_documents** | `meeting_document_id (PK)`, `entity_id` (FK), `date`, `doctype` (ENUM), `filename`, `raw_md5sum` **unique**, `text_md5sum` **unique** |
-| **download\_metadata** | `download_metadata_id (PK)`, `meeting_document_id` (FK, nullable), `download_url`, `saved_as`, `md5`, `downloaded_utc`                |
+
+### `entities` Table
+
+Represents each public body (e.g., a school district).
+
+| Column         | Description                                                |
+|----------------|------------------------------------------------------------|
+| `entity_id`    | Primary key (internal ID)                                  |
+| `name`         | Canonical name (e.g. `jackson_county_schools`)             |
+| `entity_type`  | Always `school_boards` for this corpus                     |
+| `country`      | Country (e.g. `"usa"`)                                     |
+| `state`        | State abbreviation (e.g. `"wv"`)                           |
+| `county`       | County name in lowercase/underscored form (e.g. `"jackson"`) |
+| `url`          | Public-facing website for the entity (optional)           |
+| `address`      | Mailing or contact address (if available)                 |
+
+Unique constraint ensures no duplicate entities:  
+`(name, country, state, county, entity_type)`
+
+---
+
+### `meeting_documents` Table
+
+Represents individual meeting documents (e.g., minutes, contracts, agendas).
+
+| Column               | Description                                                                 |
+|----------------------|-----------------------------------------------------------------------------|
+| `meeting_document_id`| Primary key                                                                |
+| `entity_id`          | Foreign key to `entities`                                                  |
+| `date`               | Document's associated meeting or publication date                          |
+| `doctype`            | Labeled document type (e.g. `MINUTES`, `CONTRACT`, `TRANSCRIPT`, etc.)     |
+| `filename`           | Canonical filename of the processed file                                   |
+| `source_url`         | Original public link to the file (if available)                            |
+| `text`               | Extracted full text (if applicable)                                        |
+| `raw_filename`       | Name of the original file downloaded                                       |
+| `raw_md5sum`         | Unique MD5 checksum of raw file                                            |
+| `text_md5sum`        | MD5 checksum of extracted text content                                     |
+| `is_supplementary`   | Boolean (0/1) — whether this document supplements another                  |
+| `parent_document_id` | Optional: if this is a supplement, link to the parent document             |
+
+Uniqueness constraint prevents duplicates per document + entity:  
+`(entity_id, date, doctype, filename, text_md5sum, parent_document_id)`
+
+---
+
+### `download_metadata` Table
+
+Tracks download events and provenance for every file acquired by the system.
+
+| Column                 | Description                                                               |
+|------------------------|---------------------------------------------------------------------------|
+| `download_metadata_id` | Primary key                                                              |
+| `meeting_document_id`  | Optional link to the canonical document (null during initial processing) |
+| `download_url`         | Direct link to file                                                      |
+| `saved_as`             | Filename used when saving locally                                        |
+| `source_page`          | Page from which file was extracted (if available)                        |
+| `md5`                  | MD5 checksum of downloaded file                                          |
+| `downloaded_utc`       | UTC timestamp of download                                                |
+| `version`              | Download version number (used for retries/re-runs)                      |
+| `module`               | Python module responsible for scraping/downloading                      |
+
+---
+
+### `.download` Files
+
+Each `.download` file is a JSON object capturing metadata about a single file download. Example:
+
+```json
+{
+  "download_url": "https://go.boarddocs.com/.../Revised%20po4220.pdf",
+  "saved_as": "Revised%20po4220.pdf",
+  "source_page": null,
+  "md5": "b545c5fb3a0339141683594e69c04ab9",
+  "downloaded_utc": "2025-06-17T03:19:25Z",
+  "version": 0,
+  "module": "src.interfaces.cli.board_meetings.scrape.pdf_link_extractor"
+}
+```
+
+### `.rename` Files
+
+Each .rename file contains a 2-line structure used for LLM classification traceability:
+
+`<fully classified text file path>`
+`<classification rationale from the LLM>`
+
+Line 1: Path of the cleaned and labeled .txt file
+
+Line 2: Human-readable reasoning from the language model used for classification
+
+These files provide transparent audit trails for how document types were inferred.
 
 ---
 
