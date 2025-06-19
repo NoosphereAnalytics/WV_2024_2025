@@ -52,6 +52,7 @@ download link (see Raw Archives).
 /.
 ├─ wv_2024_2025.db                     ← main dataset
 ├─ wv_2024_2025_download_metadata.db   ← download metadata
+├─ data.tree.txt                       ← a tree view of the raw data archive 
 ├─ queries                             ← copy-paste examples
 ```
 
@@ -146,6 +147,8 @@ data/countries/usa/states/wv/counties/<county>/<entity_type>/<entity_name>/<year
 These will be added via archive.org and the link added here.
 If you need the raw (\~16GB) corpus before then, please email
 [morgan@noosphereanalytics.com](mailto:morgan@noosphereanalytics.com)
+
+The tree view of the archive is available [here](data.tree.txt)
 
 ---
 
