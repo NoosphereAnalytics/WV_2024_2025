@@ -53,10 +53,13 @@ download link (see Raw Archives).
 
 ```
 /.
-├─ wv_2024_2025.db                     ← main dataset
-├─ wv_2024_2025_download_metadata.db   ← download metadata
-├─ data.tree.txt                       ← a tree view of the raw data archive 
-├─ queries                             ← copy-paste examples
+├─ wv_2024_2025.db.gz                     ← main dataset
+├─ wv_2024_2025_download_metadata.db.gz   ← download metadata
+├─ data.tree.txt                          ← a tree view of the raw data archive 
+├─ queries                                ← copy-paste examples
+
+Run `gunzip wv_2024_2025.db.gz wv_2024_2025_download_metadata.db.gz` in order to decompress the sqlite files before using them.
+
 ```
 
 ### 2.1 Database schema (abridged)
