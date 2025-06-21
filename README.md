@@ -160,9 +160,9 @@ ORDER  BY md.date;
 
 ## 6. Raw Archives
 
-Raw PDF and TXT files will be uploaded to archive.org. In the meantime, email [morgan@noosphereanalytics.com](mailto\:morgan@noosphereanalytics.com) for early access (\~16GB).
+All of the raw data including the database files found here are available at:
 
-The `data.tree.txt` file includes a directory listing of the archive.
+https://archive.org/details/wv_2024_2025_noosphere_analytics
 
 ---
 
